@@ -1,0 +1,29 @@
+# Ignore compiled files.
+dist
+
+# Yarn/NPM
+node_modules/
+package-lock.json
+# yarn.lock
+
+# Storybook
+.out
+
+# System
+.DS_Store
+
+# Git deploy
+.publish
+
+# Composer
+composer.lock
+/vendor/
+
+# Jest
+.coverage
+
+# Gatsby
+public
+.gatsby-context.js
+.cache/
+**/static/storybook/*

@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+
+  storybook:
+    image: "node:16.11.1-bullseye"
+    container_name: "${PROJECT_NAME}_storybook"
+    working_dir: /var/www/html
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.${PROJECT_NAME}_storybook.loadbalancer.server.port=6006"
+    - "traefik.http.routers.${PROJECT_NAME}_storybook.rule=Host(`${PROJECT_BASE_URL}`)"
+    volumes:
+    - ./:/var/www/html
+    command: sh -c 'yarn develop'
+
+  gatsby:
+    image: "node:16.11.1-bullseye"
+    container_name: "${PROJECT_NAME}_gatsby"
+    working_dir: /var/www/html
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.${PROJECT_NAME}_gatsby.loadbalancer.server.port=8000"
+    - "traefik.http.routers.${PROJECT_NAME}_gatsby.rule=Host(`gatsby.${PROJECT_BASE_URL}`)"
+    volumes:
+    - ./:/var/www/html
+    command: sh -c "yarn workspace acme-ds-gatsby gatsby develop -p 8000 -H 0.0.0.0"
+    environment:
+      - GATSBY_TELEMETRY_DISABLED=1
+
+  traefik:
+    image: traefik:v2.0
+    container_name: "${PROJECT_NAME}_traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+    ports:
+    - '8000:80'
+    #- '8080:8080' # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
